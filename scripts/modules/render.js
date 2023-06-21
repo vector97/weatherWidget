@@ -1,6 +1,6 @@
 import { getCurrentTime } from './utils.js';
 
-export const renderWidgetToday = (widget) => {
+export const renderWidgetToday = (widget, data) => {
   const { year, month, dayOfMonth, dayOfWeek, hours, minutes } = getCurrentTime();
 
   widget.insertAdjacentHTML(
@@ -13,42 +13,64 @@ export const renderWidgetToday = (widget) => {
           <p class="widget__day">${dayOfWeek}</p>
         </div>
         <div class="widget__icon">
-          <img class="widget__img" src="./icon/01d.svg" alt="Погода">
+          <img class="widget__img" src="./icon/${data.weather[0].icon}.svg" alt="Погода">
         </div>
         <div class="widget__wheather">
           <div class="widget__city">
-            <p>Калининград</p>
+            <p>${data.name}</p>
             <button class="widget__change-city" aria-label="Изменить город"></button>
           </div>
-          <p class="widget__temp-big">19.3°C</p>
+          <p class="widget__temp-big">${(data.main.temp - 273.15).toFixed(1)}°C</p>
           <p class="widget__felt">ощущается</p>
-          <p class="widget__temp-small">18.8 °C</p>
+          <p class="widget__temp-small">${(data.main.feels_like - 273.15).toFixed(1)} °C</p>
         </div>
       </div>
     `
   );
 };
 
-export const renderWidgetOther = (widget) => {
+export const renderWidgetOther = (widget, data) => {
+  let direction = '&#8657;';
+  if (
+    data.wind.deg <= 360 && data.wind.deg > 337.5 ||
+    data.wind.deg <= 22.5 && data.wind.deg > 0
+  ) {
+    direction = '&#8657;'; // С
+  } else if (data.wind.deg <= 337.5 && data.wind.deg > 292.5) {
+    direction = '&#8662;'; // СЗ
+  } else if (data.wind.deg <= 292.5 && data.wind.deg > 247.5) {
+    direction = '&#8656;'; // З
+  } else if (data.wind.deg <= 247.5 && data.wind.deg > 202.5) {
+    direction = '&#8665;'; // ЮЗ
+  } else if (data.wind.deg <= 202.5 && data.wind.deg > 157.5) {
+    direction = '&#8659;'; // Ю
+  } else if (data.wind.deg <= 157.5 && data.wind.deg > 112.5) {
+    direction = '&#8664;'; // ЮВ
+  } else if (data.wind.deg <= 112.5 && data.wind.deg > 67.5) {
+    direction = '&#8658;'; // В
+  } else if (data.wind.deg <= 67.5 && data.wind.deg > 22.5) {
+    direction = '&#8663;'; // СВ
+  }
+
   widget.insertAdjacentHTML(
     'beforeend',
     `
       <div class="widget__other">
         <div class="widget__wind">
           <p class="widget__wind-title">Ветер</p>
-          <p class="widget__wind-speed">3.94 м/с</p>
-          <p class="widget__wind-text">&#8599;</p>
+          <p class="widget__wind-speed">${data.wind.speed} м/с</p>
+          <p class="widget__wind-text">${direction}</p>
 
         </div>
         <div class="widget__humidity">
           <p class="widget__humidity-title">Влажность</p>
-          <p class="widget__humidity-value">27%</p>
+          <p class="widget__humidity-value">${data.main.humidity}%</p>
           <p class="widget__humidity-text">Т.Р: -0.2 °C</p>
         </div>
 
         <div class="widget__pressure">
           <p class="widget__pressure-title">Давление</p>
-          <p class="widget__pressure-value">768.32</p>
+          <p class="widget__pressure-value">${data.main.pressure}</p>
           <p class="widget__pressure-text">мм рт.ст.</p>
         </div>
       </div>
@@ -89,4 +111,9 @@ export const renderWidgetForecast = (widget) => {
       </ul>
     `
   );
+};
+
+export const renderError = (widget, error) => {
+  widget.textContent = error.toString();
+  widget.classList.add('widget_error');
 };
