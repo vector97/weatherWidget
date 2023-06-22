@@ -1,7 +1,12 @@
-import { getCurrentTime } from './utils.js';
+import { calculateDewPoint, calculatePressure, getCurrentTime, getWindDirection } from './utils.js';
 
 export const renderWidgetToday = (widget, data) => {
   const { year, month, dayOfMonth, dayOfWeek, hours, minutes } = getCurrentTime();
+  const {
+    weather: [{ icon }],
+    name,
+    main: { temp, feels_like: feelsLike }
+  } = data;
 
   widget.insertAdjacentHTML(
     'beforeend',
@@ -13,16 +18,16 @@ export const renderWidgetToday = (widget, data) => {
           <p class="widget__day">${dayOfWeek}</p>
         </div>
         <div class="widget__icon">
-          <img class="widget__img" src="./icon/${data.weather[0].icon}.svg" alt="Погода">
+          <img class="widget__img" src="./icon/${icon}.svg" alt="Погода">
         </div>
         <div class="widget__wheather">
           <div class="widget__city">
-            <p>${data.name}</p>
+            <p>${name}</p>
             <button class="widget__change-city" aria-label="Изменить город"></button>
           </div>
-          <p class="widget__temp-big">${(data.main.temp - 273.15).toFixed(1)}°C</p>
+          <p class="widget__temp-big">${temp}°C</p>
           <p class="widget__felt">ощущается</p>
-          <p class="widget__temp-small">${(data.main.feels_like - 273.15).toFixed(1)} °C</p>
+          <p class="widget__temp-small">${feelsLike} °C</p>
         </div>
       </div>
     `
@@ -30,27 +35,10 @@ export const renderWidgetToday = (widget, data) => {
 };
 
 export const renderWidgetOther = (widget, data) => {
-  let direction = '&#8657;';
-  if (
-    data.wind.deg <= 360 && data.wind.deg > 337.5 ||
-    data.wind.deg <= 22.5 && data.wind.deg > 0
-  ) {
-    direction = '&#8657;'; // С
-  } else if (data.wind.deg <= 337.5 && data.wind.deg > 292.5) {
-    direction = '&#8662;'; // СЗ
-  } else if (data.wind.deg <= 292.5 && data.wind.deg > 247.5) {
-    direction = '&#8656;'; // З
-  } else if (data.wind.deg <= 247.5 && data.wind.deg > 202.5) {
-    direction = '&#8665;'; // ЮЗ
-  } else if (data.wind.deg <= 202.5 && data.wind.deg > 157.5) {
-    direction = '&#8659;'; // Ю
-  } else if (data.wind.deg <= 157.5 && data.wind.deg > 112.5) {
-    direction = '&#8664;'; // ЮВ
-  } else if (data.wind.deg <= 112.5 && data.wind.deg > 67.5) {
-    direction = '&#8658;'; // В
-  } else if (data.wind.deg <= 67.5 && data.wind.deg > 22.5) {
-    direction = '&#8663;'; // СВ
-  }
+  const {
+    wind: { speed, deg },
+    main: { humidity, pressure, temp }
+  } = data;
 
   widget.insertAdjacentHTML(
     'beforeend',
@@ -58,19 +46,19 @@ export const renderWidgetOther = (widget, data) => {
       <div class="widget__other">
         <div class="widget__wind">
           <p class="widget__wind-title">Ветер</p>
-          <p class="widget__wind-speed">${data.wind.speed} м/с</p>
-          <p class="widget__wind-text">${direction}</p>
+          <p class="widget__wind-speed">${speed} м/с</p>
+          <p class="widget__wind-text">${getWindDirection(deg)}</p>
 
         </div>
         <div class="widget__humidity">
           <p class="widget__humidity-title">Влажность</p>
-          <p class="widget__humidity-value">${data.main.humidity}%</p>
-          <p class="widget__humidity-text">Т.Р: -0.2 °C</p>
+          <p class="widget__humidity-value">${humidity}%</p>
+          <p class="widget__humidity-text">Т.Р: ${calculateDewPoint(temp, humidity)} °C</p>
         </div>
 
         <div class="widget__pressure">
           <p class="widget__pressure-title">Давление</p>
-          <p class="widget__pressure-value">${data.main.pressure}</p>
+          <p class="widget__pressure-value">${calculatePressure(pressure)}</p>
           <p class="widget__pressure-text">мм рт.ст.</p>
         </div>
       </div>
