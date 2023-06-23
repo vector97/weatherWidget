@@ -47,21 +47,15 @@
   align-items: center;
 }
 
-.widget__date {}
-
 .widget__time {
   font-size: 28px;
 }
-
-.widget__day {}
 
 .widget__icon {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
-.widget__icon-text {}
 
 .widget__img {
   width: 80px;
@@ -89,8 +83,7 @@
   border: none;
   background-color: transparent;
   padding: 0;
-  background: transparent url('../icon/edit.svg') center/contain no-repeat;
-
+  background: transparent url('./icon/edit.svg') center/contain no-repeat;
 }
 
 .widget__temp-big {
@@ -119,8 +112,6 @@
   align-items: center;
 }
 
-.widget__wind-title {}
-
 .widget__wind-speed,
 .widget__humidity-value,
 .widget__pressure-value {
@@ -135,12 +126,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-
 }
-
-.widget__humidity-title {}
-
-
 
 .widget__pressure {
   display: flex;
@@ -150,7 +136,7 @@
 
 .widget__forecast {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .widget__day-item {
@@ -165,8 +151,6 @@
 .widget__day-item:last-child {
   border-right: none;
 }
-
-.widget__day-text {}
 
 .widget__day-img {
   width: 30px;
